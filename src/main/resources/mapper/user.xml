@@ -5,8 +5,8 @@
 	<!-- 반드시 세미콜론을 제거 해야 한다.(얘 -> ;) -->
 	<!-- id는 매칭되어 있는 인터페이스의 메서드 명과 같아야한다. -->
 	<insert id="insert">
-		inset into user_tb(username, password, fullname, created_at) 
-		values(#{username}, #{password}, #{fullname}, #{createdAt}) 
+		insert into user_tb(username, password, fullname, created_at) 
+		values(#{username}, #{password}, #{fullname}, now()) 
 	</insert>
 	<update id="updateById">
 		UPDATE user_tb SET username = #{username},
