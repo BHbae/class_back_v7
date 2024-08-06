@@ -20,13 +20,13 @@ public class Account {
 	private Long balance;
 	private Integer userId;
 	private Timestamp createdAt;
-	
+
 	// 출금 기능
 	public void withdraw(Long amount) {
 		// 방어적 코드
 		this.balance -= amount;
 	}
-	
+
 	// 입금 기능
 	public void deposit(Long amount) {
 		this.balance += amount;
@@ -35,6 +35,5 @@ public class Account {
 	// 잔액 여부 확인
 	// 잔액 여부 확인
 	// 계좌 소유자 확인 기능
-	
-	
+
 }
