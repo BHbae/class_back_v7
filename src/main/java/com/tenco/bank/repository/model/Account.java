@@ -14,8 +14,8 @@ import lombok.ToString;
 @ToString
 @Builder
 public class Account {
-	private Integer id;
-	private String number;
+	private Integer id; // 
+	private String number; // 
 	private String password;
 	private Long balance;
 	private Integer userId;
