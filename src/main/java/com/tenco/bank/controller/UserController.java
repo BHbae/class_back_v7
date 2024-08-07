@@ -18,6 +18,8 @@ public class UserController {
 	@Autowired // DI 처리
 	private UserService userService;
 	
+	
+	
 	/**
 	 * 회원 가입 페이지 요청
 	 * 주소설계 -> http://localhost/user/sign-up 
@@ -38,7 +40,7 @@ public class UserController {
 	 */
 	@PostMapping("/sign-up")
 	public String signUpProc(SignUpDTO dto) {
-		
+		System.out.println("test : " + dto.toString());
 		// controller 에서 일반적인 코드 작업
 		// 1. 인증검사 (여기서는 인증검사 불 필요 "회원가입 기능이기떄문")
 		// 2. 유효성 검사
