@@ -4,14 +4,11 @@
 
 <!-- start of content.jsp(xxx.jsp) -->
 <div class="col-sm-8">
-	<h2>출금 요청(인증)</h2>
+	<h2>이체 요청(인증)</h2>
 	<h5>Bank App에 오신걸 환영 합니다</h5>
-		<!-- 
-		insert into account_tb(number, password, balance, user_id, created_at)
-	 -->
-	<form action="/account/withdrawal" method="POST">
+	<form action="/account/transfer" method="POST">
 		<div class="form-group">
-			<label for="amount">출금 금액:</label> 
+			<label for="amount">이체 금액:</label> 
 			<input type="number" class="form-control" placeholder="Enter amount" id="amount" name="amount" value="1000">
 		</div>
 		<div class="form-group">
@@ -19,13 +16,18 @@
 			<input type="text" class="form-control" placeholder="Enter account number" id="wAccountNumber" name="wAccountNumber" value="1111">
 		</div>
 		<div class="form-group">
-			<label for="pwd">출금 계좌 비밀 번호:</label> 
-			<input type="password" class="form-control" placeholder="Enter password" id="pwd" name="wAccountPassword" value="1234">
+			<label for="dAccountNumber">입금 계좌 번호:</label> 
+			<input type="text" class="form-control" placeholder="Enter account number" id="dAccountNumber" name="dAccountNumber" value="2222">
+		</div>
+		<div class="form-group">
+			<label for="password">출금 계좌 비밀 번호:</label> 
+			<input type="password" class="form-control" placeholder="Enter password" id="password" name="password" value="1234">
 		</div>
 		
 		<div class="text-right">
-		<button type="submit" class="btn btn-primary">출금 요청</button>
+		<button type="submit" class="btn btn-primary">이체 요청</button>
 		</div>
+		
 	</form>
 
 
