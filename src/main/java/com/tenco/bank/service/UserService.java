@@ -13,18 +13,21 @@ import com.tenco.bank.handler.exception.RedirectException;
 import com.tenco.bank.repository.interfaces.UserRepository;
 import com.tenco.bank.repository.model.User;
 
+import jakarta.servlet.http.HttpSession;
+
 @Service // IoC 대상( 싱글톤 으로 관리)
 public class UserService {
 	
 	// DI - 의존 주입 
-	@Autowired
 	private UserRepository repository;
+	private HttpSession session;
 	
-//	@Autowired 어노테이션으로 대체 가능 하다.
-//	생성자 의존 주입 - DI
-//	public UserService(UserRepository userRepository) {
-//		this.repository = userRepository;
-//	}
+	@Autowired //어노테이션으로 대체 가능 하다.
+	//생성자 의존 주입 - DI
+	public UserService(UserRepository userRepository, HttpSession session) {
+		this.repository = userRepository;
+		this.session = session;
+	}
 	
 	
 	

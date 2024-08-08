@@ -45,6 +45,8 @@ public class UserController {
 	/**
 	 * 회원 가입 로직 처리 요청
 	 * 주소 설계 : http://localhost/user/sign-up 
+	 * 	// Get, Post -> sign-up 같은 도메인이라도 구분이 가능하다. 
+		// REST API 를 사용하는 이유에 대해한번 더 살펴 보세요  
 	 * @param dto
 	 * @return
 	 */
