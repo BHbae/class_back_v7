@@ -36,11 +36,11 @@ public class GlobalControllerAdvice {
 	public String dataDeliveryExceptionm(DataDeliveryException e) {
 		StringBuffer sb = new StringBuffer();
 		sb.append(" <script>");
-		sb.append(" alert('" + e.getMessage() + "');");
-		sb.append(" hitory.back();");
+		sb.append(" alert('"+ e.getMessage()  +"');");
+		sb.append(" hitory.back(); ");
 		sb.append(" </script>");
+		return sb.toString(); 
 
-		return sb.toString();
 	}
 
 	@ResponseBody
@@ -49,7 +49,7 @@ public class GlobalControllerAdvice {
 		StringBuffer sb = new StringBuffer();
 		sb.append(" <script>");
 		sb.append(" alert('" + e.getMessage() + "');");
-		sb.append(" hitory.back(); ");
+		sb.append(" location.href='/user/sign-in';");
 		sb.append(" </script>");
 
 		return sb.toString();
