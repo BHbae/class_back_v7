@@ -1,31 +1,89 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.tenco.bank.repository.interfaces.HistoryRepository">
+<mapper
+	namespace="com.tenco.bank.repository.interfaces.HistoryRepository">
 	<insert id="insert">
-		INSERT INTO history_tb(amount, w_balance, d_balance, w_account_id, d_account_id)
-		VALUES (#{amount},#{wBalance},#{dBalance},#{wAccountId},#{dAccountId})
+		INSERT INTO history_tb(amount, w_balance, d_balance,
+		w_account_id, d_account_id)
+		VALUES
+		(#{amount},#{wBalance},#{dBalance},#{wAccountId},#{dAccountId})
 	</insert>
-	
+
 	<update id="updateById">
 		UPDATE history_tb SET amount = #{amount},
-							  w_balance = #{wBalance},
-							  d_balance = #{amount},
-							  w_account_id = #{wAccountId},
-							  d_account_id = #{dAccountId}
-							  WHERE id = #{id}
+		w_balance =
+		#{wBalance},
+		d_balance = #{amount},
+		w_account_id = #{wAccountId},
+		d_account_id = #{dAccountId}
+		WHERE id = #{id}
 	</update>
-	
+
 	<delete id="deleteById">
 		DELETE FROM history_tb WHERE id = #{id}
 	</delete>
-	
-	<select id="findById" resultType="com.tenco.bank.repository.model.History">
+
+	<select id="findById"
+		resultType="com.tenco.bank.repository.model.History">
 		SELECT * FROM history_tb WHERE id = #{id}
 	</select>
-	
-	<select id="findAll" resultType="com.tenco.bank.repository.model.History">
-		SELECT * FROM history_tb 
+
+	<select id="findAll"
+		resultType="com.tenco.bank.repository.model.History">
+		SELECT * FROM history_tb
+	</select>
+
+	<select id="findByAccountIdAndTypeOfHistory"
+		resultType="com.tenco.bank.repository.model.HistoryAccount">
+		<if test="type == 'all'">
+			select h.id, h.amount,
+			case
+			when h.w_account_id =
+			#{accountId} then (h.w_balance)
+			when h.d_account_id = #{accountId}
+			then (h.d_balance)
+			end as balance,
+			coalesce(cast(wa.number as
+			char(10)), 'ATM') as sender,
+			coalesce(cast(da.number as char(10)),
+			'ATM') as receiver,
+			h.created_at
+			from history_tb as h
+			left join
+			account_tb as wa on h.w_account_id =
+			wa.id
+			left join account_tb as da
+			on h.d_account_id = da.id
+			where
+			h.w_account_id = #{accountId} OR
+			h.d_account_id = #{accountId}
+		</if>
+
+		<if test="type == 'deposit'">
+			select h.id, h.amount, h.d_balance as balance, a.number,
+			h.created_at,
+			COALESCE(cast(h.w_account_id AS CHAR(10)) , 'ATM') as
+			sender
+			from history_tb as h
+			left join account_tb as a
+			on h.d_account_id = a.id
+			WHERE h.d_account_id = #{accountId}
+
+		</if>
+
+		<if test="type == 'withdrawal'">
+			select h.id, h.amount, h.w_balance as balance , a.number,
+			h.created_at,
+			COALESCE(cast(h.d_account_id AS CHAR(10)) , 'ATM') as
+			receiver
+			from history_tb as h
+			left join account_tb as a
+			on
+			h.w_account_id = a.id
+			WHERE h.w_account_id = #{accountId}
+		</if>
+
 	</select>
 
 
