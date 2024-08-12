@@ -227,7 +227,10 @@ public class AccountController {
 	 */
 	@GetMapping("/detail/{accountId}")
 	public String detail(@PathVariable(name = "accountId") Integer accountId,
-			@RequestParam(required = false, name = "type") String type, Model model) {
+			@RequestParam(required = false, name = "type") String type, 
+			@RequestParam(name = "page", defaultValue = "1") int page,
+			@RequestParam(name = "size", defaultValue = "2") int size,Model model) {
+		
 		
 		// 인증 검사
 		User principal = (User) session.getAttribute(Define.PRINCIPAL);
@@ -242,11 +245,23 @@ public class AccountController {
 			throw new DataDeliveryException("유효하지 않은 접근 입니다", HttpStatus.BAD_REQUEST);
 		}
 		
+		// 페이지 개수를 계산하기 위해서 총 페이지 수를 계산해주어야한다.
+		int totalRecords = service.countHistoryByAccountAndType(type, accountId);
+		
+		int totalPages = (int)Math.ceil((double)totalRecords / size);
+		
 		Account account = service.readAccountById(accountId);
-		List<HistoryAccount> historyList = service.readHistoryByAccountId(type, accountId);
+		
+		List<HistoryAccount> historyList = service.readHistoryByAccountId(type, accountId, page, size);
 		
 		model.addAttribute("account", account);
 		model.addAttribute("historyList", historyList);
+		
+		model.addAttribute("currentPage", page);
+		model.addAttribute("totalPages", totalPages);
+		model.addAttribute("type", type);
+		model.addAttribute("size", size);
+		
 		return "account/detail";
 	}
 

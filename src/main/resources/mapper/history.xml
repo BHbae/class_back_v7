@@ -58,6 +58,8 @@
 			where
 			h.w_account_id = #{accountId} OR
 			h.d_account_id = #{accountId}
+			limit #{limit}
+			offset #{offset}
 		</if>
 
 		<if test="type == 'deposit'">
@@ -67,8 +69,11 @@
 			sender
 			from history_tb as h
 			left join account_tb as a
-			on h.d_account_id = a.id
+			on h.d_account_id
+			= a.id
 			WHERE h.d_account_id = #{accountId}
+			limit #{limit}
+			offset #{offset}
 
 		</if>
 
@@ -82,6 +87,30 @@
 			on
 			h.w_account_id = a.id
 			WHERE h.w_account_id = #{accountId}
+			limit #{limit}
+			offset #{offset}
+		</if>
+
+	</select>
+
+
+	<select id="countByAccountIdAndType" resultType="Integer">
+		<if test="type == 'all'">
+			select count(*)
+			from history_tb 
+			where
+			w_account_id = #{accountId} OR
+			d_account_id = #{accountId}
+		</if>
+		<if test="type == 'deposit'">
+			select count(*)
+			from history_tb 
+			WHERE d_account_id = #{accountId}
+		</if>
+		<if test="type == 'withdrawal'">
+			select count(*)
+			from history_tb 
+			WHERE w_account_id = #{accountId}
 		</if>
 
 	</select>

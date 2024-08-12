@@ -13,9 +13,8 @@
 		</div>
 		<br>
 		<div>
-			<a href="/account/detail/${account.id}?type=all" class="btn btn-outline-primary">전체</a>&nbsp; 
-			<a href="/account/detail/${account.id}?type=deposit"class="btn btn-outline-primary">입금</a>&nbsp; 
-			<a href="/account/detail/${account.id}?type=withdrawal" class="btn btn-outline-primary">출금</a>&nbsp;
+			<a href="/account/detail/${account.id}?type=all" class="btn btn-outline-primary">전체</a>&nbsp; <a href="/account/detail/${account.id}?type=deposit"
+				class="btn btn-outline-primary">입금</a>&nbsp; <a href="/account/detail/${account.id}?type=withdrawal" class="btn btn-outline-primary">출금</a>&nbsp;
 		</div>
 		<table class="table table-striped">
 			<thead>
@@ -37,9 +36,32 @@
 						<th>${historyAccount.formatKoreanWon(historyAccount.balance)}</th>
 					</tr>
 				</c:forEach>
-
 			</tbody>
 		</table>
+		<br>
+		<!-- Pagination -->
+		<div class="d-flex justify-content-center">
+			<ul class="pagination">
+				<!-- Previous Page Link -->
+				<li class="page-item <c:if test='${currentPage == 1}'>disabled</c:if>">
+					<a class="page-link" href="?type=${type}&page=${currentPage - 1}&size=${size}">이전 페이지(Previous)</a>
+				</li>
+
+				<!-- Page Numbers -->
+				<c:forEach begin="1" end="${totalPages}" var="page">
+					<li class="page-item <c:if test='${page == currentPage}'>active</c:if>">
+						<a class="page-link" href="?type=${type}&page=${page}&size=${size}">${page}</a>
+					</li>
+				</c:forEach>
+
+				<!-- Mage Page Link -->
+				<li class="page-item <c:if test='${currentPage == totalPages}'>disabled</c:if>">
+					<a class="page-link" href="?type=${type}&page=${currentPage + 1}&size=${size}">다음 페이지(Next)</a>
+				</li>
+
+			</ul>
+		</div>
+
 	</div>
 
 

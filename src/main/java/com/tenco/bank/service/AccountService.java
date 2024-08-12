@@ -139,7 +139,6 @@ public class AccountService {
 
 		history.setWBalance(null);
 		history.setWAccountId(null);
-		
 
 		int rowResultCount = historyRepository.insert(history);
 		if (rowResultCount != 1) {
@@ -147,27 +146,27 @@ public class AccountService {
 		}
 
 	}
-	
+
 	// 이체 기능 만들기
 	// 1. 출금 계좌 존재 여부 - select
 	// 2. 입금 계좌 존재 여부 - select
 	// 3. 출금 계좌 본인 소유 확인 -- 객체상태값 세션에 아이디 비교
 	// 4. 출금 계좌 비밀 번호 확인 -- 객체상태값 dto비밀번호와 비교
 	// 5. 출금 계좌 잔액 여부 확인 -- 객체상태값 dto 계좌 와 비교
-	
+
 	// 6. 출금 계좌 객체 상태값 변경 처리 (잔액 다운 처리)
-	// 7. 입금 계좌 객체 상태값 변경 처리 (잔액 증가 처리)  
-	
+	// 7. 입금 계좌 객체 상태값 변경 처리 (잔액 증가 처리)
+
 	// 8. 출금 계좌 객체 -- update 처리
 	// 9. 출금 계좌 객체 -- update 처리
-	
+
 	// 10. 거래내역 등록 처리
 	// 11. 트랜잭션 처리
-	
+
 	@Transactional
 	public void updateAccountTransfer(transferDTO dto, Integer principalId) {
 		Account wAccount = repository.findByNumber(dto.getWAccountNumber()); // 출금 계좌
-		Account dAccount = repository.findByNumber(dto.getDAccountNumber()); //입금 계좌 
+		Account dAccount = repository.findByNumber(dto.getDAccountNumber()); // 입금 계좌
 		// 1
 		// 2
 		if (dAccount == null || wAccount == null) {
@@ -177,18 +176,18 @@ public class AccountService {
 		wAccount.checkOwner(principalId);
 		wAccount.checkPassword(dto.getPassword());
 		wAccount.checkBalance(dto.getAmount());
-		
+
 		// 6
 		wAccount.withdraw(dto.getAmount());
 		// 7
 		dAccount.deposit(dto.getAmount());
-		
-		//8
+
+		// 8
 		repository.updateById(dAccount);
-		//9
+		// 9
 		repository.updateById(wAccount);
-		
-		//10
+
+		// 10
 		History history = new History();
 		history.setAmount(dto.getAmount());
 
@@ -197,40 +196,45 @@ public class AccountService {
 
 		history.setWBalance(wAccount.getBalance());
 		history.setWAccountId(wAccount.getId());
-		
 
 		int rowResultCount = historyRepository.insert(history);
 		if (rowResultCount != 1) {
 			throw new DataDeliveryException(Define.FAILED_PROCESSING, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
-	
+
 	/**
-	 *  단일 계좌 조회 기능(accountId 기준 )
+	 * 단일 계좌 조회 기능(accountId 기준 )
+	 * 
 	 * @param accountId(pk)
 	 * @return
 	 */
 	public Account readAccountById(Integer accountId) {
 		Account accountEntity = repository.findByAccountId(accountId);
-		if(accountEntity == null) {
+		if (accountEntity == null) {
 			throw new DataDeliveryException(Define.NOT_EXIST_ACCOUNT, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		return accountEntity;
 	}
-	
+
 	/**
 	 * 단일 계좌 거래 내역 조회
-	 * @param type = [all, deposit, withdrawal]
+	 * 
+	 * @param type      = [all, deposit, withdrawal]
 	 * @param accountId (pk)
 	 * @return (전체, 입금, 출금 내력 3가지 타입 반환)
 	 */
-	public List<HistoryAccount> readHistoryByAccountId(String type, Integer accountId){
+	public List<HistoryAccount> readHistoryByAccountId(String type, Integer accountId, int page, int size) {
 		List<HistoryAccount> list = new ArrayList<>();
-		list = historyRepository.findByAccountIdAndTypeOfHistory(type, accountId);
-		
-		
+		int limit =size;
+		int offset = (page -1) * size;
+		list = historyRepository.findByAccountIdAndTypeOfHistory(type, accountId,limit, offset);
+
 		return list;
 	}
-	
-	
+
+	public int countHistoryByAccountAndType(String type, Integer accountId) {
+		return historyRepository.countByAccountIdAndType(type, accountId);
+	}
+
 }
