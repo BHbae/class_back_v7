@@ -12,11 +12,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.SessionAttribute;
 
 import com.tenco.bank.dto.DepositDTO;
 import com.tenco.bank.dto.SaveDTO;
 import com.tenco.bank.dto.WithdrawalDTO;
 import com.tenco.bank.dto.transferDTO;
+import com.tenco.bank.handler.AuthInterceptor;
 import com.tenco.bank.handler.exception.DataDeliveryException;
 import com.tenco.bank.handler.exception.UnAuthorizedException;
 import com.tenco.bank.repository.model.Account;
@@ -26,21 +28,18 @@ import com.tenco.bank.service.AccountService;
 import com.tenco.bank.utils.Define;
 
 import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
 
 @Controller // IoC 대상(싱글톤으로 관리) // I 인버절 o 오프 C 컨트롤 (제어의 역전)
 @RequestMapping("/account")
+@RequiredArgsConstructor 
 public class AccountController {
-
-	private final HttpSession session;
-	private final AccountService service;
 
 	// DI 처리
 	@Autowired
-	public AccountController(HttpSession session, AccountService service) {
-		this.session = session;
-		this.service = service;
-	}
+	private final AccountService service;
 
+	
 	/**
 	 * 계좌 생성 페이지 요청 주소 설계 : Http://localhost:8080/account/save
 	 * 
@@ -50,22 +49,15 @@ public class AccountController {
 	@GetMapping("/save")
 	public String savePage() {
 
-		// 1. 인증 검사가 필요(account 전체가 필요함)
-		User principal = (User) session.getAttribute("principal");
-		if (principal == null) {
-			throw new UnAuthorizedException(Define.NOT_AN_AUTHENTICATED_USER, HttpStatus.UNAUTHORIZED);
-		}
+		
 		return "account/save";
 	}
 
 	@PostMapping("/save")
-	public String saveProc(SaveDTO dto) {
+	public String saveProc(SaveDTO dto, @SessionAttribute(Define.PRINCIPAL) User principal) {
 		// 1. 데이터 추출 (파싱 전략)
-		// 2. 인증검사
-		User principal = (User) session.getAttribute(Define.PRINCIPAL);
-		if (principal == null) {
-			throw new UnAuthorizedException(Define.NOT_AN_AUTHENTICATED_USER, HttpStatus.UNAUTHORIZED);
-		}
+		
+		
 
 		// 3. 유효성 검사
 		if (dto.getNumber() == null || dto.getNumber().isEmpty()) {
@@ -81,7 +73,7 @@ public class AccountController {
 		// 4. 서비스 호출
 		service.createAccount(dto, principal.getId());
 
-		return "redirect:/index";
+		return "redirect:/account/list";
 	}
 
 	/**
@@ -90,12 +82,9 @@ public class AccountController {
 	 * @return list.jsp
 	 */
 	@GetMapping("/list")
-	public String listPage(Model model) {
+	public String listPage(Model model, @SessionAttribute(Define.PRINCIPAL) User principal) {
 		// 1. 인증검사
-		User principal = (User) session.getAttribute(Define.PRINCIPAL);
-		if (principal == null) {
-			throw new UnAuthorizedException(Define.NOT_AN_AUTHENTICATED_USER, HttpStatus.UNAUTHORIZED);
-		}
+		
 		// 2. 유효성 검사?
 		// 3. 서비스 호출
 		List<Account> accountList = service.readAccountListByUserId(principal.getId());
@@ -112,20 +101,14 @@ public class AccountController {
 
 	@GetMapping("/withdrawal")
 	public String withdrawalPage() {
-		User principal = (User) session.getAttribute(Define.PRINCIPAL);
-		if (principal == null) {
-			throw new UnAuthorizedException(Define.NOT_AN_AUTHENTICATED_USER, HttpStatus.UNAUTHORIZED);
-		}
+		
 
 		return "account/withdrawal";
 	}
 
 	@PostMapping("/withdrawal")
-	public String withdrawalProc(WithdrawalDTO dto) {
-		User principal = (User) session.getAttribute(Define.PRINCIPAL);
-		if (principal == null) {
-			throw new UnAuthorizedException(Define.NOT_AN_AUTHENTICATED_USER, HttpStatus.UNAUTHORIZED);
-		}
+	public String withdrawalProc(WithdrawalDTO dto, @SessionAttribute(Define.PRINCIPAL) User principal) {
+		
 
 		// 유효성 검사 ( 자바 코드를 개발) --> 스프링 부트 @Valid 라이브러리가 존재
 		if (dto.getAmount() == null) {
@@ -149,20 +132,14 @@ public class AccountController {
 	// 입금 페이지
 	@GetMapping("/deposit")
 	public String updateDeposit() {
-		User principal = (User) session.getAttribute(Define.PRINCIPAL);
-		if (principal == null) {
-			throw new UnAuthorizedException(Define.NOT_AN_AUTHENTICATED_USER, HttpStatus.UNAUTHORIZED);
-		}
+		
 		return "account/deposit";
 	}
 
 	@PostMapping("/deposit")
-	public String depositProc(DepositDTO dto) {
+	public String depositProc(DepositDTO dto, @SessionAttribute(Define.PRINCIPAL) User principal) {
 		// 인증 검사
-		User principal = (User) session.getAttribute(Define.PRINCIPAL);
-		if (principal == null) {
-			throw new UnAuthorizedException(Define.NOT_AN_AUTHENTICATED_USER, HttpStatus.UNAUTHORIZED);
-		}
+		
 
 		// 유효성 검사
 		if (dto.getAmount() == null) {
@@ -183,20 +160,14 @@ public class AccountController {
 	// 이체 페이지 요청
 	@GetMapping("/transfer")
 	public String updateTransper() {
-		User principal = (User) session.getAttribute(Define.PRINCIPAL);
-		if (principal == null) {
-			throw new UnAuthorizedException(Define.NOT_AN_AUTHENTICATED_USER, HttpStatus.UNAUTHORIZED);
-		}
+		
 		return "account/transfer";
 	}
 
 	@PostMapping("/transfer")
-	public String transfetProc(transferDTO dto) {
+	public String transfetProc(transferDTO dto, @SessionAttribute(Define.PRINCIPAL) User principal) {
 		// 인증 검사
-		User principal = (User) session.getAttribute(Define.PRINCIPAL);
-		if (principal == null) {
-			throw new UnAuthorizedException(Define.NOT_AN_AUTHENTICATED_USER, HttpStatus.UNAUTHORIZED);
-		}
+		
 
 		// 유효성 검사
 		if (dto.getAmount() == null) {
@@ -232,11 +203,7 @@ public class AccountController {
 			@RequestParam(name = "size", defaultValue = "2") int size,Model model) {
 		
 		
-		// 인증 검사
-		User principal = (User) session.getAttribute(Define.PRINCIPAL);
-		if (principal == null) {
-			throw new UnAuthorizedException(Define.NOT_AN_AUTHENTICATED_USER, HttpStatus.UNAUTHORIZED);
-		}
+		
 		
 		// 유효성 검사
 		List<String> validTypes = Arrays.asList("all", "deposit", "withdrawal");
@@ -257,7 +224,7 @@ public class AccountController {
 		model.addAttribute("account", account);
 		model.addAttribute("historyList", historyList);
 		
-		model.addAttribute("currentPage", page);
+		model.addAttribute("currentPage", page); 
 		model.addAttribute("totalPages", totalPages);
 		model.addAttribute("type", type);
 		model.addAttribute("size", size);
