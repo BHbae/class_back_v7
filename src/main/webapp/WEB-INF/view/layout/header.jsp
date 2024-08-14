@@ -53,7 +53,18 @@
 					<div class="col-sm-4">
 						<h2>About Me</h2>
 						<h5>Photo of me:</h5>
-						<div class="m--profile"></div>
+						<!-- 코드 수정 start -->
+						<!-- 1. 로그인 유무 확인 -->
+						<c:choose>
+							<c:when test="${principal != null}">
+								<img class="m--profile" alt="" src="${principal.setUpUserImage()}">							
+							</c:when>
+							<c:otherwise>
+								<div class="m--profile"></div>
+							</c:otherwise>
+						</c:choose>
+						
+						<!-- 코드 수정 end -->
 						<p>코린이 개발을 위한 뱅크앱</p>
 						<h3>서비스 목록</h3>
 						<p>계좌목록, 생성, 출금, 입금, 이체 페이지를 활용 할 수 있어영</p>

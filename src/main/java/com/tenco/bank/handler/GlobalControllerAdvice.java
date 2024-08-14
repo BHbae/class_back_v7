@@ -16,13 +16,13 @@ public class GlobalControllerAdvice {
 	 * (개발시에 많이 활용) 모든 예외 클래스를 알 수 없기 떄문에 로깅으로 확인할 수 있도록 설정 로깅 처리 - 동기적 방식
 	 * (System.out.println), @slf4j (비동기 처리됨)
 	 */
-	@ExceptionHandler(Exception.class)
-	public void exception(Exception e) {
-		System.out.println("--------------------------------");
-		System.out.println(e.getClass().getName());
-		System.out.println(e.getMessage());
-		System.out.println("--------------------------------");
-	}
+//	@ExceptionHandler(Exception.class)
+//	public void exception(Exception e) {
+//		System.out.println("--------------------------------");
+//		System.out.println(e.getClass().getName());
+//		System.out.println(e.getMessage());
+//		System.out.println("--------------------------------");
+//	}
 
 	/**
 	 * @param e
@@ -37,7 +37,7 @@ public class GlobalControllerAdvice {
 		StringBuffer sb = new StringBuffer();
 		sb.append(" <script>");
 		sb.append(" alert('"+ e.getMessage()  +"');");
-		sb.append(" hitory.back(); ");
+		sb.append(" window.history.back(); ");
 		sb.append(" </script>");
 		return sb.toString(); 
 
