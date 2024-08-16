@@ -47,7 +47,7 @@ public class UserService {
 	public void createUser(SignUpDTO dto) {
 		int result = 0;
 		
-		if(!dto.getMFile().isEmpty()) {
+		if(dto.getMFile() != null && !dto.getMFile().isEmpty()) {
 			// 파일 업로드 로직 구현
 			String[] fileNames = uploadFile(dto.getMFile());
 			
@@ -141,6 +141,15 @@ public class UserService {
 		}
 		
 		return new String[] {mFile.getOriginalFilename(), uploadFileName};
+	}
+	
+	/**
+	 * username 사용자 존재여부 조회
+	 * @param strong username
+	 * @return
+	 */
+	public User searchUsername(String username) {
+		return repository.findByUsername(username);
 	}
 	
 }
